@@ -555,13 +555,12 @@ int console_execute(const char *str)
             do {           
               temp=strtok(0," ");
               x=strcmp(temp,"*");
-              printf("%d\n",x);
             }while (x!=0);
             if (x==0) all_files(u);
             else findinfile(u);                  
           }
       }
-                else
+     else
     if (strcmp(u,"mouse")==0)
                 {
                   while (!kb_ready()){
@@ -1061,25 +1060,22 @@ void console_main()
     } while (1);
   ;};
 
+
+
+
+// christine's function addition
 int search_in_File(char *fname, char *str) {
   file_PCB *fp;
-  // file_PCB *f=
-   // file_PCB *f=openfilex(fname,0);
-  int line_num = 1;
+   int line_num = 1;
   int find_result = 0;
   char temp[100];
   
-  //gcc users
-   // handle=openfilex(name,FILE_READ);
-
+  
   if((fp = openfilex(fname,FILE_READ)) == NULL) {
     return(-1);
   }
 
-  //Visual Studio users
-  // if((fopen_s(&fp, fname, "r")) != NULL) {
-  //  return(-1);
-  // }
+  
 
   while(fgets(temp, 100, fp) != NULL) {
     if((strstr(temp, str)) != NULL) {
@@ -1130,25 +1126,7 @@ int findinfile(char *find){
     }
   return(0);
 }
-// display all files
 
-// int displayfile(char *find){
-  // DIR *d;
-  // struct dirent *dir;
-  // d = opendir(".");
-  // if (d)
-  // {
-  //   while ((dir = readdir(d)) != NULL)
-  //   {
-  //     printf("%s\n", dir->d_name);
-  //     findfinfile(dir->d_name);
-  //   }
-
-  //   closedir(d);
-  // }
-
-  // return(0);
-// }
 
 void all_files(char *u)
 {
