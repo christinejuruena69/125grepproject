@@ -459,7 +459,7 @@ void console_ls(int style, int sortmethod)
             strcpy(fname,buffer[i].name);
             fname[24]=0;
             printf("%-25s ",fname);
-            totalbytes+=buffer[i].size;
+            totalbytes+=buffer[i].size;\
             
             if ( (i+1)%3==0 && (i+1 < totalfiles) ) printf("\n");
 
@@ -546,40 +546,21 @@ int console_execute(const char *str)
                 {
                     fg_set_state(1);
                 }
-      else if (strcmp(u,"grep")==0){
-               u=strtok(0," ");               
-                    char filename[255];
-                    char word[255];
-               if (u!=0){
-                  // if(u<2){
-                    printf("greppy %d \n", u);
-                    int i=0;
-                    int result, errno;
-
-                    // for(i=0;i<u;i++){ 
-                    do {           
-                      switch(i){
-                        case 0: strcpy(word, u);
-                          break;
-                        case 1: strcpy(filename, u);
-                          break;
-                      }
-                      i++;
-                       u=strtok(0," ");
-                 
-                   } while (u!=0);
-                        // printf("%s\n",word );
-                        // printf("%s\n",filename );
-                    result = search_in_File(filename, word);
-                    if(result == -1) {
-                      // perror("Error");
-                      printf("Error number = %d\n");
-                      exit(1);
-                    }
-                    return(0);
-                }
-
-    }
+       else if (strcmp(u,"grep")==0){
+          u=strtok(0," ");
+          char *temp;
+          strcpy(temp, u);
+          if (u!=0){
+            int x;
+            do {           
+              temp=strtok(0," ");
+              x=strcmp(temp,"*");
+              printf("%d\n",x);
+            }while (x!=0);
+            if (x==0) all_files(u);
+            else findinfile(u);                  
+          }
+      }
                 else
     if (strcmp(u,"mouse")==0)
                 {
@@ -927,7 +908,7 @@ int console_execute(const char *str)
              }
              else
     if (strcmp(u,"lsext")==0)
-    			 {
+			 {
               extension_list();
              }
              else
@@ -961,13 +942,13 @@ int console_execute(const char *str)
              }
              else         
     if (strcmp(u,"unload")==0)
-    			 {
+			 {
              u=strtok(0," ");
              if (u!=0)
-             	{
+	{
 	             if (module_unload_library(u)==-1)
                 printf("Error unloading library");
-   	         };
+	         };
              }
              else
     if (strcmp(u,"demo_graphics")==0)
@@ -1124,3 +1105,79 @@ void usage(char *filename) {
   // printf("%s version 1.0 \nCopyright(c) CodingUnit.com\n", filename);
 };
 
+//read all files in directory//
+int findinfile(char *find){
+  int i=0;
+  int result, errno;
+  char filename[255];
+  char word[255];
+  do {           
+    switch(i){
+    case 0: strcpy(word, find);
+      break;
+    case 1: strcpy(filename, find);
+      break;
+    }
+    i++;
+    find=strtok(0," ");
+                 
+  }while (find!=0);
+   result = search_in_File(filename, word);
+   if(result == -1) {
+      printf("Error number = %d\n");
+      exit(1);
+      return(0);
+    }
+  return(0);
+}
+// display all files
+
+// int displayfile(char *find){
+  // DIR *d;
+  // struct dirent *dir;
+  // d = opendir(".");
+  // if (d)
+  // {
+  //   while ((dir = readdir(d)) != NULL)
+  //   {
+  //     printf("%s\n", dir->d_name);
+  //     findfinfile(dir->d_name);
+  //   }
+
+  //   closedir(d);
+  // }
+
+  // return(0);
+// }
+
+void all_files(char *u)
+{
+    vfs_node *dptr=current_process->workdir;
+    vfs_node *buffer;
+    int totalfiles=0,i,result;
+    
+    //obtain total number of files
+    totalfiles = vfs_listdir(dptr,0,0);
+    buffer = (vfs_node*) malloc( totalfiles * sizeof(vfs_node));
+    //Place the list of files obtained from the VFS into a buffer
+    totalfiles = vfs_listdir(dptr,buffer,totalfiles* sizeof(vfs_node));     
+    for (i=0; i < totalfiles; i++)
+    {
+        char fname[255];   
+        
+            strcpy(fname,buffer[i].name);
+            fname[24]=0;
+            printf("%-25s ",fname);
+            
+            result = search_in_File(fname, u);
+            if(result == -1) {
+              // perror("Error");
+               printf("Error number = %d\n");
+               exit(1);
+              return(0);
+            }
+
+      
+    };
+    
+};

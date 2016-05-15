@@ -57,7 +57,8 @@ int console_new();
 void console_main();
 void usage(char *filename);
 int search_in_File(char *fname, char *str);
-
+void all_files(char *u);
+int findinfile(char *find);
 
 
 #endif
