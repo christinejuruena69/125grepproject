@@ -555,17 +555,15 @@ int console_execute(const char *str)
           strcpy(arr, u);
           if (u!=0){
             int x, withquot,wordcnt=0;
-            do {  
+            do {
               strcat(arr, " ");
               temp=strtok(0," ");
-              strcat(arr, temp);
+              // removeChar(&temp);
               // printf("word: %s\n",temp);
               x=strcmp(temp,"*");
-              // if (temp == '\0' || temp == NULL){
-              //   printf("findinfile na jud\n");
-              //   break;
-              // }
               wordcnt++;
+              if(x==0) break;
+              strcat(arr, temp);
             }while ( x!=0 );
             temp=NULL;
               // printf("cat: %s\n",arr);
@@ -683,7 +681,7 @@ int console_execute(const char *str)
                 }
                 else  
     if (strcmp(u,"ver")==0) {
-		printf("%s",dex32_versionstring);
+    printf("%s",dex32_versionstring);
                 }
                 else
     if (strcmp(u,"cpuid")==0)
@@ -922,7 +920,7 @@ int console_execute(const char *str)
              }
              else
     if (strcmp(u,"lsext")==0)
-			 {
+       {
               extension_list();
              }
              else
@@ -956,13 +954,13 @@ int console_execute(const char *str)
              }
              else         
     if (strcmp(u,"unload")==0)
-			 {
+       {
              u=strtok(0," ");
              if (u!=0)
-	{
-	             if (module_unload_library(u)==-1)
+  {
+               if (module_unload_library(u)==-1)
                 printf("Error unloading library");
-	         };
+           };
              }
              else
     if (strcmp(u,"demo_graphics")==0)
@@ -1176,76 +1174,68 @@ void all_files(char *u, int wordcnt)
     buffer = (vfs_node*) malloc( totalfiles * sizeof(vfs_node));
     //Place the list of files obtained from the VFS into a buffer
     totalfiles = vfs_listdir(dptr,buffer,totalfiles* sizeof(vfs_node));     
-    for (i=0; i < totalfiles; i++)
-    {
+    
+    // CHECK IF ONE WORD
+    int wordcntfind;
+    char quot = '"'; //character to search
+    char *found;
+    found = strchr(u, quot);
+    if (found==NULL) wordcntfind=0; ////finding  multiple  words
+    else wordcntfind=1; //finding  phrase
+              printf("Wbago ang lahat: %s \n", u);
+
+    for (i=0; i < totalfiles; i++){
+      printf("%d, %d, %d \n", i , i, i);
+      printf("%d, %d, %d \n", i , i, i);
+      printf("%d, %d, %d \n", i , i, i);
+      printf("%d, %d, %d \n", i , i, i);
         char fname[255];   
         
             strcpy(fname,buffer[i].name);
             fname[24]=0;
             printf("%-25s ",fname); //print the filename
 
-            int wordcntfind;
-            char quot = '"'; //character to search
-            char *found;
             
-            found = strchr(u, quot);
-            if (found==NULL) wordcntfind=0;
-            else wordcntfind=1;
-
-
-
             
+                        // found=NULL;
+
+
+
             printf("wordcnt:   %d\n",wordcnt);
-            if (wordcntfind>0){
-              //call fucntion that return 
-              char *wordcopy, *findword;
-              strcpy(wordcopy, u);
-                  printf("wordcopy: %s\n",wordcopy );
-
-
+            if (wordcntfind==1){
+            printf("Finding a phrase.\n");
+              //finding a phrase
               int z ;
-              printf("huhuhuh:   %s\n",findword);
+              char *wordcopy;              
 
-
-              findword=strtok(u," ");
-              for (z = 0; z < wordcnt; z++){
-                  removeChar(&findword);
-                  printf("FIND:   %s\n",findword);
-                  // printf("HOOOY\n");
-                  findword=strtok(0," ");
-
-                  // strcpy(findword, u);
-
-                  // printf("FIND:   %s\n",findword);
-                  // strcpy(findword, u);
-                  // printf("CAT:   %s\n",findword);
-                  
-                  
-
-                /* code */
-                  // printf("ZzZ %d\n",z );
-
-
-                  // u=strtok(0," ");
-                  // result = search_in_File(fname, wordcopy);
-                  // if(result == -1) {
-                  //   // perror("Error");
-                  //    printf("Error number = %d\n");
-                  //    exit(1);
-                  //   return(0);
-                  // }
-                  
-                  // u=strtok(0," ");
-              }
-              wordcopy = NULL;
-            }else{
-              result = search_in_File(fname, u);
+              removeChar(&u);
+              // wordcopy=strtok(u," ");
+              printf("snunsu %s\n",u );
+              // for (z = 0; z < wordcnt; z++){
+                  result = search_in_File(fname, u);
                   if(result == -1) {
                     // perror("Error");
                      printf("Error number = %d\n");
                      exit(1);
                     return(0);
-                  }
+                  }  
+                // wordcopy=strtok(0," ");                
+              // }               
+              
+            }else{
+              //multiple words
+              printf("Multiple word search.\n");
+              int z;
+            char *hmm, *copy2;
+            strcpy(hmm, u);
+            printf("Word to be searched: %s \n", hmm);
+              copy2=strtok(hmm," ");
+              for (z = 0; z < wordcnt; z++){
+              printf("strtok: %s \n", copy2);
+                copy2=strtok(0," ");
+              resultfxn(fname, copy2);
+                
+              }
             }
             
             
@@ -1254,7 +1244,18 @@ void all_files(char *u, int wordcnt)
     };
     
 };
+void resultfxn(char *fname,  char *wordcopy){
+int result;
+              printf("WORD: %s \n", wordcopy);
 
+  result = search_in_File(fname, wordcopy);
+                    if(result == -1) {
+                      // perror("Error");
+                       printf("Error number = %d\n");
+                       exit(1);
+                      return(0);
+                    }
+}
 int  morewordscheck(char **find){
 
   char quot = '"'; //character to search
