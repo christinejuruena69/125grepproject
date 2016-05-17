@@ -549,13 +549,14 @@ int console_execute(const char *str)
        else if (strcmp(u,"grep")==0){
 
           u=strtok(0," ");
-          char *temp, *temp2;
+          char *temp;
           char *arr;
           strcpy(temp, u);
           strcpy(arr, u);
           if (u!=0){
             int x, withquot,wordcnt=0;
-            do {
+            // do {
+            while(temp){
               strcat(arr, " ");
               temp=strtok(0," ");
               // removeChar(&temp);
@@ -564,12 +565,17 @@ int console_execute(const char *str)
               wordcnt++;
               if(x==0) break;
               strcat(arr, temp);
-            }while ( x!=0 );
+            }
+
+            printf("WORD WORD WORD: %s\n",arr );
+            printf("wordcnt %i\n", wordcnt );
+            // printf("WORD WORD WORD: %s\n",arr );
+            // while ( x!=0 );
             temp=NULL;
               // printf("cat: %s\n",arr);
-            printf("wordcnt %i\n", wordcnt );
-            if (x!=0) findinfile(u); 
-            else  all_files(arr, wordcnt);
+            // if (x!=0) findinfile(arr, wordcnt); 
+            // else  all_files(arr, wordcnt);
+            all_files(arr, wordcnt);
             u = NULL;
           }
       }
@@ -1118,30 +1124,32 @@ void usage(char *filename) {
 };
 
 //read all files in directory//
-int findinfile(char *find){
+int findinfile(char *find, char *wordcnt){
   int i=0;
   int result, errno;
   char filename[255];
-  char word[255];
-  printf("findinfile\n");
-  do {           
-    switch(i){
-    case 0: strcpy(word, find);
-      break;
-    case 1: strcpy(filename, find);
-      break;
-    }
-    i++;
-    find=strtok(0," ");
+  char word[255], *arr;
+  arr = strtok(find, " ");
+  printf("findinfile: %s\n", find);
+
+  // do {           
+  //   switch(i){
+  //   case 0: strcpy(word, find);
+  //     break;
+  //   case 1: strcpy(filename, find);
+  //     break;
+  //   }
+  //   i++;
+  //   arr=strtok(0," ");
                  
-  }while (find!=0);
-   result = search_in_File(filename, word);
-   if(result == -1) {
-      printf("Error number = %d\n");
-      exit(1);
-      return(0);
-    }
-  return(0);
+  // }while (find!=0);
+  //  result = search_in_File(filename, word);
+  //  if(result == -1) {
+  //     printf("Error number = %d\n");
+  //     exit(1);
+  //     return(0);
+  //   }
+  // return(0);
 }
 // display all files
 
@@ -1165,16 +1173,21 @@ int findinfile(char *find){
 
 void all_files(char *u, int wordcnt)
 {
+  // if (x!=0) findinfile(arr, wordcnt); 
+            // else  all_files(arr, wordcnt);
+    int totalfiles=0,i,result;
+  // if(all!=0){
+  //   totalfiles=1;
+  // }else{
     vfs_node *dptr=current_process->workdir;
     vfs_node *buffer;
-    int totalfiles=0,i,result;
     
     //obtain total number of files
     totalfiles = vfs_listdir(dptr,0,0);
     buffer = (vfs_node*) malloc( totalfiles * sizeof(vfs_node));
     //Place the list of files obtained from the VFS into a buffer
     totalfiles = vfs_listdir(dptr,buffer,totalfiles* sizeof(vfs_node));     
-    
+    // }
     // CHECK IF ONE WORD
     int wordcntfind;
     char quot = '"'; //character to search
@@ -1182,24 +1195,24 @@ void all_files(char *u, int wordcnt)
     found = strchr(u, quot);
     if (found==NULL) wordcntfind=0; ////finding  multiple  words
     else wordcntfind=1; //finding  phrase
-              printf("Wbago ang lahat: %s \n", u);
 
     for (i=0; i < totalfiles; i++){
-      printf("%d, %d, %d \n", i , i, i);
-      printf("%d, %d, %d \n", i , i, i);
-      printf("%d, %d, %d \n", i , i, i);
-      printf("%d, %d, %d \n", i , i, i);
-        char fname[255];   
-        
-            strcpy(fname,buffer[i].name);
-            fname[24]=0;
-            printf("%-25s ",fname); //print the filename
+        // if(all!=0){
+        //   int j=0;
+        //     char fname[255];   
+        //   do{
+        //     j++;
+        //     strcpy(fname, )
+        //   }while(j!=wordcnt);
 
-            
-            
-                        // found=NULL;
-
-
+        // }else{
+          char fname[255];   
+          
+              strcpy(fname,buffer[i].name);
+              fname[24]=0;
+              printf("%-25s ",fname); //print the filename
+          
+        // }
 
             printf("wordcnt:   %d\n",wordcnt);
             if (wordcntfind==1){
@@ -1210,15 +1223,16 @@ void all_files(char *u, int wordcnt)
 
               removeChar(&u);
               // wordcopy=strtok(u," ");
-              printf("snunsu %s\n",u );
               // for (z = 0; z < wordcnt; z++){
-                  result = search_in_File(fname, u);
-                  if(result == -1) {
-                    // perror("Error");
-                     printf("Error number = %d\n");
-                     exit(1);
-                    return(0);
-                  }  
+              resultfxn(fname, u);
+
+                  // result = search_in_File(fname, u);
+                  // if(result == -1) {
+                  //   // perror("Error");
+                  //    printf("Error number = %d\n");
+                  //    exit(1);
+                  //   return(0);
+                  // }  
                 // wordcopy=strtok(0," ");                
               // }               
               
@@ -1231,7 +1245,7 @@ void all_files(char *u, int wordcnt)
             printf("Word to be searched: %s \n", hmm);
               copy2=strtok(hmm," ");
               for (z = 0; z < wordcnt; z++){
-              printf("strtok: %s \n", copy2);
+              // printf("strtok: %s \n", copy2);
                 copy2=strtok(0," ");
               resultfxn(fname, copy2);
                 

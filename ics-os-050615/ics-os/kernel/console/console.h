@@ -58,7 +58,7 @@ void console_main();
 void usage(char *filename);
 int search_in_File(char *fname, char *str);
 void all_files(char *u, int wordcnt);
-int findinfile(char *find);
+int findinfile(char *find, char * wordcnt);
 int  morewordscheck(char **find);
 
 
