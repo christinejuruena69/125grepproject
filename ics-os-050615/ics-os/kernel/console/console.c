@@ -1143,25 +1143,7 @@ int findinfile(char *find){
     }
   return(0);
 }
-// display all files
 
-// int displayfile(char *find){
-  // DIR *d;
-  // struct dirent *dir;
-  // d = opendir(".");
-  // if (d)
-  // {
-  //   while ((dir = readdir(d)) != NULL)
-  //   {
-  //     printf("%s\n", dir->d_name);
-  //     findfinfile(dir->d_name);
-  //   }
-
-  //   closedir(d);
-  // }
-
-  // return(0);
-// }
 
 void all_files(char *u, int wordcnt)
 {
@@ -1185,10 +1167,7 @@ void all_files(char *u, int wordcnt)
               printf("Wbago ang lahat: %s \n", u);
 
     for (i=0; i < totalfiles; i++){
-      printf("%d, %d, %d \n", i , i, i);
-      printf("%d, %d, %d \n", i , i, i);
-      printf("%d, %d, %d \n", i , i, i);
-      printf("%d, %d, %d \n", i , i, i);
+    
         char fname[255];   
         
             strcpy(fname,buffer[i].name);
