@@ -547,20 +547,35 @@ int console_execute(const char *str)
                     fg_set_state(1);
                 }
        else if (strcmp(u,"grep")==0){
+
           u=strtok(0," ");
-          char *temp;
+          char *temp, *temp2;
+          char *arr;
           strcpy(temp, u);
+          strcpy(arr, u);
           if (u!=0){
-            int x;
-            do {           
+            int x, withquot,wordcnt=0;
+            do {  
+              strcat(arr, " ");
               temp=strtok(0," ");
+              strcat(arr, temp);
+              // printf("word: %s\n",temp);
               x=strcmp(temp,"*");
-            }while (x!=0);
-            if (x==0) all_files(u);
-            else findinfile(u);                  
+              // if (temp == '\0' || temp == NULL){
+              //   printf("findinfile na jud\n");
+              //   break;
+              // }
+              wordcnt++;
+            }while ( x!=0 );
+            temp=NULL;
+              // printf("cat: %s\n",arr);
+            printf("wordcnt %i\n", wordcnt );
+            if (x!=0) findinfile(u); 
+            else  all_files(arr, wordcnt);
+            u = NULL;
           }
       }
-     else
+                else
     if (strcmp(u,"mouse")==0)
                 {
                   while (!kb_ready()){
@@ -1060,22 +1075,25 @@ void console_main()
     } while (1);
   ;};
 
-
-
-
-// christine's function addition
 int search_in_File(char *fname, char *str) {
   file_PCB *fp;
-   int line_num = 1;
+  // file_PCB *f=
+   // file_PCB *f=openfilex(fname,0);
+  int line_num = 1;
   int find_result = 0;
   char temp[100];
   
-  
+  //gcc users
+   // handle=openfilex(name,FILE_READ);
+
   if((fp = openfilex(fname,FILE_READ)) == NULL) {
     return(-1);
   }
 
-  
+  //Visual Studio users
+  // if((fopen_s(&fp, fname, "r")) != NULL) {
+  //  return(-1);
+  // }
 
   while(fgets(temp, 100, fp) != NULL) {
     if((strstr(temp, str)) != NULL) {
@@ -1107,6 +1125,7 @@ int findinfile(char *find){
   int result, errno;
   char filename[255];
   char word[255];
+  printf("findinfile\n");
   do {           
     switch(i){
     case 0: strcpy(word, find);
@@ -1126,9 +1145,27 @@ int findinfile(char *find){
     }
   return(0);
 }
+// display all files
 
+// int displayfile(char *find){
+  // DIR *d;
+  // struct dirent *dir;
+  // d = opendir(".");
+  // if (d)
+  // {
+  //   while ((dir = readdir(d)) != NULL)
+  //   {
+  //     printf("%s\n", dir->d_name);
+  //     findfinfile(dir->d_name);
+  //   }
 
-void all_files(char *u)
+  //   closedir(d);
+  // }
+
+  // return(0);
+// }
+
+void all_files(char *u, int wordcnt)
 {
     vfs_node *dptr=current_process->workdir;
     vfs_node *buffer;
@@ -1145,17 +1182,98 @@ void all_files(char *u)
         
             strcpy(fname,buffer[i].name);
             fname[24]=0;
-            printf("%-25s ",fname);
+            printf("%-25s ",fname); //print the filename
+
+            int wordcntfind;
+            char quot = '"'; //character to search
+            char *found;
             
-            result = search_in_File(fname, u);
-            if(result == -1) {
-              // perror("Error");
-               printf("Error number = %d\n");
-               exit(1);
-              return(0);
+            found = strchr(u, quot);
+            if (found==NULL) wordcntfind=0;
+            else wordcntfind=1;
+
+
+
+            
+            printf("wordcnt:   %d\n",wordcnt);
+            if (wordcntfind>0){
+              //call fucntion that return 
+              char *wordcopy, *findword;
+              strcpy(wordcopy, u);
+                  printf("wordcopy: %s\n",wordcopy );
+
+
+              int z ;
+              printf("huhuhuh:   %s\n",findword);
+
+
+              findword=strtok(u," ");
+              for (z = 0; z < wordcnt; z++){
+                  removeChar(&findword);
+                  printf("FIND:   %s\n",findword);
+                  // printf("HOOOY\n");
+                  findword=strtok(0," ");
+
+                  // strcpy(findword, u);
+
+                  // printf("FIND:   %s\n",findword);
+                  // strcpy(findword, u);
+                  // printf("CAT:   %s\n",findword);
+                  
+                  
+
+                /* code */
+                  // printf("ZzZ %d\n",z );
+
+
+                  // u=strtok(0," ");
+                  // result = search_in_File(fname, wordcopy);
+                  // if(result == -1) {
+                  //   // perror("Error");
+                  //    printf("Error number = %d\n");
+                  //    exit(1);
+                  //   return(0);
+                  // }
+                  
+                  // u=strtok(0," ");
+              }
+              wordcopy = NULL;
+            }else{
+              result = search_in_File(fname, u);
+                  if(result == -1) {
+                    // perror("Error");
+                     printf("Error number = %d\n");
+                     exit(1);
+                    return(0);
+                  }
             }
+            
+            
 
       
     };
     
 };
+
+int  morewordscheck(char **find){
+
+  char quot = '"'; //character to search
+  char *found;
+  //char *attrVal = NULL;
+
+  found = strchr(*find, quot);
+
+  if (found==NULL) return 0;
+  else return 1;
+
+}
+
+void removeChar(char **str ) {
+  char garbage = '"';
+    char *src, *dst;
+    for (src = dst = *str; *src != '\0'; src++) {
+        *dst = *src;
+        if (*dst != garbage) dst++;
+    }
+    *dst = '\0';
+}
